@@ -138,7 +138,7 @@ td.user a p {
     font-weight: bold;
 
 }
-td.remove{
+td.remove button{
     background: none;
     border: none;
     color: red;
