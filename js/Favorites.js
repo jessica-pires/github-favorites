@@ -1,3 +1,25 @@
+export class GithubUser{
+    static search(username){
+    const endpoint = `api.github.com/users/${username}`
+
+    return fetch(endpoint)
+    .then(data => data.json())
+    .then(data =>{
+        return {
+            login: data.login,
+            name: data.name,
+            public_repos : data.public_repos,
+            followers: data.followers
+        }
+    } )
+    }
+}
+
+
+
+
+
+
 // classe qu vai conter logica dos dados 
 //como os dados serao estruturados
 
@@ -6,29 +28,27 @@ export class Favorites{
         this.root = document.querySelector(root)
         this.load()
 
+        GithubUser.search('')
+        .then(user => )
+
     }
 
     load() {
-        this.entries = [
-            {
-                login: 'jessica-Pires' , 
-                name: 'Jessica Pires', 
-                public_repos: '34' , 
-                followers: '3'
-            },
-            {
-                login: 'maykbrito' , 
-                name: 'Mayk Brito', 
-                public_repos: '76' , 
-                followers: '14.544'
-            }
-        ]
+        this.entries = JSON.parse(localStorage.getItem('github-favorites:')) || []
+    }
+
+    delete(user){
+        const filteredEntries = this.entries
+        .filter(entry => entry.login !==user.login) 
+
+        this.entries = filteredEntries
+        this.update()
     }
 
 
 }
 
-//classe que vai criar a visualixzação e eventos do html
+//classe que vai criar a visualização e eventos do html
 
 export class FavoritesView extends Favorites{
     constructor(root){
@@ -38,6 +58,15 @@ export class FavoritesView extends Favorites{
 
 
         this.update()
+    }
+
+
+
+    onadd(){
+        const addButton = this.root.querySelector('.search button')
+        addButton.onclick = () =>{
+            
+        }
     }
 
     update(){
@@ -52,6 +81,12 @@ export class FavoritesView extends Favorites{
             row.querySelector('.user span').textContent = user.login
             row.querySelector('.repositories').textContent = user.public_repos
             row.querySelector('.followers').textContent = user.followers
+            row.querySelector('.remove').onclick = () => {
+                const isOk = confirm('Tem certeza que deseja deletar essa linha?')
+                if(isOk == true){
+                    this.delete(user)
+                }
+            }
             
 
 
@@ -60,6 +95,8 @@ export class FavoritesView extends Favorites{
         })
     }
 
+
+    //criando html 
     createRow(){
         const tr = document.createElement('tr')
 
